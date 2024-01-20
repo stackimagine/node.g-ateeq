@@ -314,12 +314,13 @@ function getCompanyData() {
 
 function formatHref(elementId, val) {
   const hrefElement = document.getElementById(elementId);
+  const innerHTML = hrefElement.innerHTML ? hrefElement.innerHTML : val;
   hrefElement.href = val;
   hrefElement.target = "_blank";
   if (hrefElement.tagName === "INPUT") {
     hrefElement.innerHTML = val;
   } else {
-    hrefElement.innerHTML = `<a target='_blank' href='${val}'>${hrefElement.innerHTML}</a>`;
+    hrefElement.innerHTML = `<a target='_blank' href='${val}'>${innerHTML}</a>`;
   }
 }
 
@@ -351,3 +352,4 @@ function showErrorPopup(errorMessage) {
     si_writer_overlay.remove();
   });
 }
+
