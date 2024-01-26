@@ -19,6 +19,10 @@ class si_Email_WriterHook
             $bean->si_conversation_history = null;
         }
 
+        if ($bean->id != "") {
+            return false;
+        }
+
         if (empty($bean->si_company_linkedin_profile) && empty($bean->website)) {
             return false;
         }

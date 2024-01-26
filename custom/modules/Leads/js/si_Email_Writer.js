@@ -40,7 +40,12 @@ function handleEmailRequest(apiEndpoint, successMessage) {
         console.error(`Error:`, data);
         showErrorPopup("Error: " + data.error);
       } else {
-        window.location.reload();
+        if (data.subject) {
+          document.getElementById('si_email_subject').innerHTML = data.subject;
+        }
+        if (data.body) {
+          document.getElementById('si_email_body').innerHTML = data.body;
+        }
       }
     })
     .catch((error) => {

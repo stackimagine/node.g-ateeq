@@ -96,11 +96,11 @@ class PrepareEmail
             $bean = \BeanFactory::getBean($module, $id, array('disable_row_level_security' => true));
 
             if (!$bean)
-                return 'Record not found';
+                return ['error' => 'Record not found'];
 
             $toEmailAddress = $bean->email1 ?? $bean->email2 ?? '';
             if (!$toEmailAddress)
-                return ucfirst($module) . ': ' . $id . ': The record does not have an email address';
+                return ['error' => ucfirst($module) . ': ' . $id . ': The record does not have an email address'];
 
             if ($bean->si_conversation_history)
                 $emailType = 'followup';
@@ -139,11 +139,11 @@ class PrepareEmail
                     break;
 
                 default:
-                    return 'Invalid email type';
+                    return ['error' => 'Invalid email type'];
             }
 
             if (isset($response['error']) && $response['error'])
-                return $response['error'];
+                return $response;
 
 
             $emailBody = $response['body'] ? nl2br($response['body']) : (isset($response['choices'][0]['message']['content']) ? $response['choices'][0]['message']['content'] : '');
@@ -153,14 +153,18 @@ class PrepareEmail
 
             if (isset($response['subject'])) {
                 $bean->si_email_subject = $response['subject'];
+                $bean->si_email_status = 'ready_for_approval';
             }
             $bean->si_email_body = $emailBody;
-            $bean->si_email_status = $emailType == 'first' ? 'ready_for_approval' : 'followup_written';
+            if ($emailType == 'followup') {
+                $bean->si_email_status =  'followup_written';
+            }
             $bean->save();
 
-            return 'true';
+            return ['subject' => $bean->si_email_subject, 'body' => $bean->si_email_body];
         } catch (\Throwable $th) {
             $GLOBALS['log']->fatal($th->getMessage());
         }
     }
 }
+

@@ -81,7 +81,9 @@ class ApiAdapter
                 return $parsed;
             }
             return $response;
-        }
+	}
+
+	$GLOBALS['log']->fatal(print_r($response, 1));
         return self::parseResponse($url, $response);
     }
 
